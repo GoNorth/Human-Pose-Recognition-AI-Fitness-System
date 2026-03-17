@@ -154,6 +154,7 @@ def helloworld():
 def upload():
     f = request.files.get('file')
     print(f)
+    os.makedirs("tmp", exist_ok=True)
     upload_path = os.path.join("tmp/tmp." + f.filename.split(".")[-1])
     print(upload_path)
     f.save(upload_path)
@@ -171,7 +172,7 @@ def stinference():
     return str(SecResult(im_url))
 
 if __name__ == '__main__':
-    app.run(host='192.168.33.1', port=90 , debug=True) #host内更改为当前的ip地址
+    app.run(host='0.0.0.0', port=90, debug=True)  # 0.0.0.0 表示本机+局域网均可访问，小程序里用 127.0.0.1 或本机 IP 即可
     # from gevent import pywsgi
 
     # server = pywsgi.WSGIServer(('0.0.0.0',5000),app)

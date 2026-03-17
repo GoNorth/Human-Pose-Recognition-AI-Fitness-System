@@ -62,7 +62,7 @@ Page({
       })
       //上传数据到数据库
       let db = wx.cloud.database({
-        env:env
+        env: getApp().globalData.env
       });
       let userCollection = db.collection('user')
       userCollection.where({

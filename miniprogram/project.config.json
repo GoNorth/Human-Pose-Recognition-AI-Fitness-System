@@ -36,7 +36,12 @@
     "checkInvalidKey": true,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "cloudfunctionRoot": "cloudfunctions/",
@@ -45,11 +50,12 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "libVersion": "2.30.3",
+  "libVersion": "2.25.4",
   "packOptions": {
     "ignore": [],
     "include": []
   },
-  "appid": "",
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
+  "appid": "wx2e1ef86acb5e6832",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
+  "simulatorPluginLibVersion": {}
 }

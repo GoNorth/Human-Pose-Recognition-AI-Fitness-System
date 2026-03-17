@@ -49,7 +49,7 @@ Page({
                 console.log("openid=="+this.data.openid);
                 //查询数据库是否存在用户
                 let db = wx.cloud.database({
-                  env:env
+                  env: app.globalData.env
                 });
                 let userCollection = db.collection('user')
                 userCollection.where({
@@ -206,7 +206,7 @@ Page({
     else if(!this.data.display){//还没从数据库查过数据，并且个人信息栏未展开
       //连接数据库获取用户的身高体重
       let db = wx.cloud.database({
-        env:env
+        env: app.globalData.env
       });
       let collections = db.collection('user');
       console.log("onshow:openid:"+this.data.openid);
@@ -244,7 +244,7 @@ Page({
       })
       //上传数据到数据库
       let db = wx.cloud.database({
-        env:env
+        env: app.globalData.env
       });
       let userCollection = db.collection('user')
       //先查询有没有数据

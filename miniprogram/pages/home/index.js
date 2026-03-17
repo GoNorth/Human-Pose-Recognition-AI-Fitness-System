@@ -61,6 +61,10 @@ Page({
     let that=this;
     openid=app.globalData.openid;
     console.log("查找历史的openid:"+openid);
+    if(!openid){
+      console.log("未登录或 openid 为空，跳过云函数拉取历史");
+      return;
+    }
     //调用云函数 俯卧撑
     wx.cloud.callFunction({
       // 自己定义的云函数名称
@@ -174,6 +178,10 @@ Page({
         success:(res)=> {        
           console.log("首页成功获取缓存数据");
           console.log(res);
+          if(!res.data || !res.data.openid){
+            console.log("缓存中无 openid，请重新在「我的」页登录");
+            return;
+          }
           app.globalData.hasLogin=true;
           app.globalData.avatarUrl=res.data.avatarUrl;
           app.globalData.nickName=res.data.nickName;
