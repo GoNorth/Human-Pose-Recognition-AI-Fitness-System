@@ -197,6 +197,18 @@ Page({
     })
     var app=getApp();
     app.globalData.historyUpdate = true;
+    if(!getApp().globalData.env){
+      wx.showToast({
+        title: '完成运动(未保存历史)',
+        icon: 'success',
+        duration: 1500
+      })
+      count=0;
+      hip_error=0;
+      up_error=0;
+      down_error=0;
+      return;
+    }
     //把数据存入数据库
     const db = wx.cloud.database({
       env: getApp().globalData.env
@@ -217,7 +229,6 @@ Page({
           icon: 'success',
           duration: 1000//持续的时间
         })
-        that.postbillsuccess()
       }
     })
     count=0;

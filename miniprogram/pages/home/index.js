@@ -59,6 +59,13 @@ Page({
   },
   checkHistory(){
     let that=this;
+    if(!app.globalData.env){
+      that.setData({
+        hasData:false,
+        hasData2:false,
+      })
+      return;
+    }
     openid=app.globalData.openid;
     console.log("查找历史的openid:"+openid);
     if(!openid){
@@ -116,6 +123,12 @@ Page({
   },
   checkHistory2(){
     let that = this;
+    if(!app.globalData.env){
+      that.setData({
+        hasData2:false,
+      })
+      return;
+    }
     //调用云函数，仰卧起坐
     wx.cloud.callFunction({
     // 自己定义的云函数名称

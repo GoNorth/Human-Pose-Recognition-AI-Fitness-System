@@ -1,8 +1,6 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init({
-  env:env
-})
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 // 云函数入口函数
 exports.main = async (event, context) => {
@@ -24,14 +22,7 @@ exports.main = async (event, context) => {
       .orderBy('time', 'desc')//降序
       .skip(event.skip)                 //跳过多少个记录（常用于分页），0表示这里不跳过
       .limit(5)               //限制显示多少条记录，这里为10
-      .get({
-        success: function (res) {
-          this.setData({
-            id:res._id
-          })
-          return res
-        }
-      });
+      .get();
     }else{
       return await cloud.database().collection("sportRecord")
       .where(
@@ -50,14 +41,7 @@ exports.main = async (event, context) => {
       .orderBy('time', 'desc')//降序
       .skip(event.skip)                 //跳过多少个记录（常用于分页），0表示这里不跳过
       .limit(5)               //限制显示多少条记录，这里为10
-      .get({
-        success: function (res) {
-          this.setData({
-            id:res._id
-          })
-          return res
-        }
-      });
+      .get();
     }
   } catch (e) {
     console.error(e);

@@ -45,15 +45,56 @@ Page({
               url: `https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code=${code}&grant_type=authorization_code`,
               success:(res)=>{
                 console.log(res);
-                this.data.openid=res.data.openid
-                console.log("openid=="+this.data.openid);
+                let openid = res.data && res.data.openid;
+                if(!openid && !app.globalData.env){
+                  openid = 'local_' + Date.now();
+                }
+                if(!openid){
+                  wx.showToast({
+                    title: '获取openid失败',
+                    icon: 'error',
+                    duration: 2000
+                  })
+                  return;
+                }
+                this.setData({ openid })
+                console.log("openid=="+openid);
+                if(!app.globalData.env){
+                  this.setData({
+                    avatarUrl: picUrl,
+                    nickName: name
+                  })
+                  app.globalData.hasLogin=true;
+                  app.globalData.avatarUrl=picUrl;
+                  app.globalData.nickName=name;
+                  app.globalData.openid=openid;
+                  app.globalData.historyUpdate=true;
+                  wx.setStorage({
+                    key:'userInfo',
+                    data:{
+                      hasLogin:true,
+                      avatarUrl:picUrl,
+                      nickName:name, 
+                      openid:openid
+                    },
+                    success:function(){
+                      console.log("我的页面 设置数据缓存成功")
+                    }
+                  })
+                  wx.showToast({
+                    title: '已登录(本地模式)',
+                    icon: 'success',
+                    duration: 1500
+                  })
+                  return;
+                }
                 //查询数据库是否存在用户
                 let db = wx.cloud.database({
                   env: app.globalData.env
                 });
                 let userCollection = db.collection('user')
                 userCollection.where({
-                  _openid:this.data.openid
+                  _openid:openid
                 })
                 .get({
                   success:(res)=>{
@@ -98,32 +139,30 @@ Page({
                     app.globalData.hasLogin=true;
                     app.globalData.avatarUrl=this.data.avatarUrl;
                     app.globalData.nickName=this.data.nickName;
-                    app.globalData.openid=this.data.openid;
+                    app.globalData.openid=openid;
                     app.globalData.historyUpdate=true;//让首页的记录更新
                     console.log("app.globalData(成功换取openid版):");
                     console.log(app.globalData);
+                    wx.setStorage({
+                      key:'userInfo',
+                      data:{
+                        hasLogin:true,
+                        avatarUrl:this.data.avatarUrl,
+                        nickName:this.data.nickName, 
+                        openid:openid
+                      },
+                      success:function(){
+                        console.log("我的页面 设置数据缓存成功")
+                      }
+                    })
                   },
                   fail(res){
                     console.log("查询用户失败")
-                  }
-                })
-                // .then(res=>{
-                //   console.log("头像昵称修改成功");
-                // })
-                // .catch(err=>{
-                //   console.log("头像昵称修改失败");
-                // })
-                 //临时存储
-                wx.setStorage({
-                  key:'userInfo',
-                  data:{
-                    hasLogin:true,
-                    avatarUrl:this.data.avatarUrl,
-                    nickName:this.data.nickName, 
-                    openid:this.data.openid
-                  },
-                  success:function(){
-                    console.log("我的页面 设置数据缓存成功")
+                    wx.showToast({
+                      title: '云开发未开通',
+                      icon: 'error',
+                      duration: 2000
+                    })
                   }
                 })
               }
@@ -204,6 +243,20 @@ Page({
       })
     }
     else if(!this.data.display){//还没从数据库查过数据，并且个人信息栏未展开
+      if(!app.globalData.env){
+        let cached = wx.getStorageSync('userInfo');
+        if(cached){
+          this.setData({
+            height: cached.height || null,
+            weight: cached.weight || null,
+          })
+        }
+        this.setData({
+          hasCheck:true,
+          display:true
+        })
+        return;
+      }
       //连接数据库获取用户的身高体重
       let db = wx.cloud.database({
         env: app.globalData.env
@@ -242,6 +295,26 @@ Page({
         click:"auto",
         hasCheck:false
       })
+      if(!app.globalData.env){
+        let cached = wx.getStorageSync('userInfo') || {};
+        wx.setStorage({
+          key:'userInfo',
+          data:{
+            hasLogin:true,
+            avatarUrl: cached.avatarUrl || this.data.avatarUrl,
+            nickName: cached.nickName || this.data.nickName, 
+            openid: cached.openid || this.data.openid,
+            height: this.data.height,
+            weight: this.data.weight
+          }
+        })
+        wx.showToast({
+          title: '已保存(本地)',
+          icon: 'success',
+          duration: 1500
+        })
+        return;
+      }
       //上传数据到数据库
       let db = wx.cloud.database({
         env: app.globalData.env
@@ -346,7 +419,9 @@ Page({
             hasLogin:true,
             avatarUrl:res.data.avatarUrl,
             nickName:res.data.nickName,
-            openid:res.data.openid
+            openid:res.data.openid,
+            height: res.data.height || null,
+            weight: res.data.weight || null
           }),
           get=true;
           console.log("我的页面 成功获取缓存数据")

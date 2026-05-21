@@ -60,6 +60,9 @@ Page({
           })
         }
       })
+      if(!getApp().globalData.env){
+        return;
+      }
       //上传数据到数据库
       let db = wx.cloud.database({
         env: getApp().globalData.env

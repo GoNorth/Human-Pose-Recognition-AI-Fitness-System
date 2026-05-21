@@ -29,6 +29,14 @@ Page({
 
   checkPushUpList(){
     let that = this;
+    if(!app.globalData.env){
+      wx.showToast({
+        title: '云开发未开通',
+        icon: 'error',
+        duration: 2000
+      })
+      return;
+    }
     console.log(app.globalData);
     console.log("俯卧撑目前dataList:");
     console.log(this.data.dataList);
@@ -89,6 +97,14 @@ Page({
   },
   checkSitUpList(){
     let that = this;
+    if(!app.globalData.env){
+      wx.showToast({
+        title: '云开发未开通',
+        icon: 'error',
+        duration: 2000
+      })
+      return;
+    }
     console.log(app.globalData)
     if(!this.data.isLoading2 && skipNum2 != -1){
       that.data.isLoading2=true;
